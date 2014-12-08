@@ -5,6 +5,9 @@ django-redis-cache==0.13.0
 wagtail==0.8.4
 django-htmlmin==0.7.0
 
+# Docker requirements
+dj-database-url==0.3.0
+
 # Developer tools
 Fabric==1.9.0
 Sphinx==1.2.2
