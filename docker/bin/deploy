@@ -1,0 +1,6 @@
+#!/bin/sh
+
+dj collectstatic --noinput
+dj compress
+dj migrate --noinput
+dj update_index

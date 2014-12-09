@@ -14,9 +14,11 @@ ADD {{ project_name }}/ /usr/local/app/
 ADD docker/uwsgi.ini /usr/local/app/uwsgi.ini
 ADD docker/local.py /usr/local/app/{{ project_name }}/settings/local.py
 ADD docker/wsgi_docker.py /usr/local/app/{{ project_name }}/wsgi_docker.py
+ADD docker/bin/ /usr/local/bin/
 
 VOLUME /usr/local/static/
 VOLUME /usr/local/media/
 WORKDIR /usr/local/app
+ENV DJANGO_SETTINGS_MODULE={{ project_name }}.settings.production
 CMD uwsgi --ini uwsgi.ini
 EXPOSE 80
