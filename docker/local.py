@@ -80,17 +80,32 @@ else:
 
 # Redis
 
-REDIS_URL = os.environ.get('REDIS_URL', None)
+REDIS_LOCATION = os.environ.get('REDIS_LOCATION', None)
 
-if REDIS_URL:
+if not REDIS_LOCATION:
+    REDIS_IP = os.environ.get('REDIS_PORT_6379_TCP_ADDR', None)
+
+    if REDIS_IP:
+        REDIS_PORT = os.environ.get('REDIS_PORT_6379_TCP_PORT')
+
+        REDIS_LOCATION = '%s:%s' % (
+            REDIS_IP,
+            REDIS_PORT,
+        )
+
+if REDIS_LOCATION:
+    REDIS_DB = int(os.environ.get('REDIS_DB', '0'))
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', '')
     REDIS_KEY_PREFIX = os.environ.get('REDIS_KEY_PREFIX', '{{ project_name }}')
 
     CACHES = {
         'default': {
             'BACKEND': 'redis_cache.cache.RedisCache',
-            'LOCATION': REDIS_URL,
+            'LOCATION': REDIS_LOCATION,
             'KEY_PREFIX': REDIS_KEY_PREFIX,
             'OPTIONS': {
+                'DB': REDIS_DB,
+                'PASSWORD': REDIS_PASSWORD,
                 'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
             }
         }
