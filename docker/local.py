@@ -20,12 +20,16 @@ if not DATABASE_URL:
         POSTGRES_USER = os.environ.get('POSTGRES_USER', 'postgres')
         POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', '')
         POSTGRES_DB = os.environ.get('POSTGRES_DB', '{{ project_name }}')
+        POSTGRES_USE_POSTGIS = int(os.environ.get('POSTGRES_USE_POSTGIS', '0'))
+
+        POSTGRES_BACKEND = 'postgis' if POSTGRES_USE_POSTGIS else 'postgres'
 
         POSTGRES_AUTH = POSTGRES_USER
         if POSTGRES_PASSWORD:
             POSTGRES_AUTH += ':' + POSTGRES_PASSWORD
 
-        DATABASE_URL = 'postgres://%s@%s:%s/%s' % (
+        DATABASE_URL = '%s://%s@%s:%s/%s' % (
+            POSTGRES_BACKEND,
             POSTGRES_AUTH,
             POSTGRES_IP,
             POSTGRES_PORT,
