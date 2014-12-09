@@ -2,7 +2,6 @@ import os
 import dj_database_url
 
 
-HOSTNAME = os.environ.get('HOSTNAME')
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite://{{ project_name }}.db')
 ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL', None)
 ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX', '{{ project_name }}')
@@ -11,7 +10,7 @@ REDIS_KEY_PREFIX = os.environ.get('REDIS_KEY_PREFIX', '{{ project_name }}')
 
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-ALLOWED_HOSTS = [HOSTNAME]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') or []
 
 
 DATABASES = {
