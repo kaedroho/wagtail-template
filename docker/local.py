@@ -10,7 +10,33 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') or []
 
 # Database
 
-DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite://{{ project_name }}.db')
+DATABASE_URL = os.environ.get('DATABASE_URL', None)
+
+if not DATABASE_URL:
+    POSTGRES_IP = os.environ.get('POSTGRES_PORT_5432_TCP_ADDR', None)
+
+    if POSTGRES_IP:
+        POSTGRES_PORT = os.environ.get('POSTGRES_PORT_5432_TCP_PORT')
+        POSTGRES_USER = os.environ.get('POSTGRES_USER', 'postgres')
+        POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', '')
+        POSTGRES_DB = os.environ.get('POSTGRES_DB', '{{ project_name }}')
+
+        POSTGRES_AUTH = POSTGRES_USER
+        if POSTGRES_PASSWORD:
+            POSTGRES_AUTH += ':' + POSTGRES_PASSWORD
+
+        DATABASE_URL = 'postgres://%s@%s:%s/%s' % (
+            POSTGRES_AUTH,
+            POSTGRES_IP,
+            POSTGRES_PORT,
+            POSTGRES_DB,
+        )
+
+    else:
+        # Fallback to SQLite
+        # Note: any database operations performed against this SQLite file will
+        # not be perisisted between commands.
+        DATABASE_URL = 'sqlite://{{ project_name }}.db'
 
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL),
