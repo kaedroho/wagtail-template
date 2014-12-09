@@ -47,6 +47,19 @@ DATABASES = {
 
 ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL', None)
 
+if not ELASTICSEARCH_URL:
+    ELASTICSEARCH_IP = os.environ.get('ELASTICSEARCH_PORT_9200_TCP_ADDR', None)
+
+    if ELASTICSEARCH_IP:
+        ELASTICSEARCH_PORT = os.environ.get('ELASTICSEARCH_PORT_9200_TCP_PORT')
+        ELASTICSEARCH_URL_PREFIX = os.environ.get('ELASTICSEARCH_URL_PREFIX', '/')
+
+        ELASTICSEARCH_URL = 'http://%s:%s%s' % (
+            ELASTICSEARCH_IP,
+            ELASTICSEARCH_PORT,
+            ELASTICSEARCH_URL_PREFIX,
+        )
+
 if ELASTICSEARCH_URL:
     ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX', '{{ project_name }}')
 
