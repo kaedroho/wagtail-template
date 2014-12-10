@@ -12,13 +12,20 @@ ADD {{ project_name }}/ /usr/local/app/
 
 # Docker configuration
 ADD docker/uwsgi.ini /usr/local/app/uwsgi.ini
-ADD docker/local.py /usr/local/app/{{ project_name }}/settings/local.py
-ADD docker/wsgi_docker.py /usr/local/app/{{ project_name }}/wsgi_docker.py
+ADD docker/settings/ /usr/local/app/{{ project_name }}/settings/
 ADD docker/bin/ /usr/local/bin/
 
-VOLUME /usr/local/static/
+# Static files
+# Note: we need to create a temporary database in order for "dj compress" to work
+ENV DJANGO_SETTINGS_MODULE {{ project_name }}.settings.dockerbuild
+RUN dj migrate --noinput > /dev/null
+RUN dj collectstatic --noinput
+RUN dj compress
+RUN find /usr/local/static -type f -not -name '*.gz' -exec sh -c 'gzip -9c "{}" > "{}.gz"' \;
+
+ENV DJANGO_SETTINGS_MODULE {{ project_name }}.settings.production
+
 VOLUME /usr/local/media/
 WORKDIR /usr/local/app
-ENV DJANGO_SETTINGS_MODULE={{ project_name }}.settings.production
 CMD uwsgi --ini uwsgi.ini
 EXPOSE 80
